@@ -158,7 +158,7 @@ void CMdSpi::AddSubscribeInstrument( char* instrumentID )
 
 void CMdSpi::SuscribeInstrumentThread( void )
 {
-	int batch = 20;
+	int batch = 64;
 	int index = 0;
 	char** ppInstrumentID = new char* [batch];
 	for(int i = 0; i < batch; ++i)
@@ -191,14 +191,15 @@ void CMdSpi::SuscribeInstrumentThread( void )
 				boost::mutex::scoped_lock lock(this->mQueueMutex);
 				for(int i = 0; i < index; ++i)
 				{
-					mSubscribedInstrumentSet.erase(ppInstrumentID[i]);
+					//push to subscribe queue again
+					mSubscribeQueue.push(ppInstrumentID[i]);
 				}
 			}
 		}
 		Sleep(10);
 	}
 	ostringstream os;
-	os<<__FUNCTION__<<"normally exits"<<endl;
+	os<<__FUNCTION__<<" normally exits"<<endl;
 	Log::Instance()->Info(os.str());
 	for(int i = 0; i < batch; ++i)
 	{

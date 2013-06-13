@@ -11,7 +11,6 @@ private:
 	CTPConfiguration* mConf;
 	CThostFtdcTraderApi* mUserApiPtr;
 	CMdSpi* mMdSpiPtr;
-	boost::thread* mQueryInstrumentThread;
 public:
 	CTdSpi(CThostFtdcTraderApi *pUserApi, CMdSpi* mdSpiPtr);
 	virtual ~CTdSpi(void);

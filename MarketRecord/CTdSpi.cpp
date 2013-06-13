@@ -10,18 +10,13 @@ using namespace std;
 CTdSpi::CTdSpi(CThostFtdcTraderApi* userApiPtr, CMdSpi* mdSpiPtr)
 	:mUserApiPtr(userApiPtr), 
 	mConf(CTPConfiguration::Instance()),
-	mMdSpiPtr(mdSpiPtr),
-	mQueryInstrumentThread(NULL)
+	mMdSpiPtr(mdSpiPtr)
 {
 }
 
 
 CTdSpi::~CTdSpi(void)
 {
-	if(mQueryInstrumentThread != NULL)
-	{
-		delete mQueryInstrumentThread;
-	}
 }
 
 void CTdSpi::OnFrontConnected()
@@ -72,10 +67,7 @@ void CTdSpi::OnRspUserLogin( CThostFtdcRspUserLoginField *pRspUserLogin, CThostF
 		os <<"--->>>CTdSpi登录成功";
 		Log::Instance()->Info(os.str());
 		// 请求订阅行情
-		if(mQueryInstrumentThread == NULL)
-		{
-			mQueryInstrumentThread = new boost::thread(boost::bind(&CTdSpi::QueryInstrumentThread, this));
-		}
+		QueryInstrumentThread();
 		
 	}
 	else
@@ -123,15 +115,14 @@ void CTdSpi::OnRspError( CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool 
 
 void CTdSpi::QueryInstrumentThread( void )
 {
-	while(TimeHelper::GetTime() < CTPConfiguration::Instance()->WorkThreadExitTime)
+	Log::Instance()->Info("Query all Instrument");
+	//for safety, I query for 5 times
+	for(int i = 0; i < 5; ++i)
 	{
 		CThostFtdcQryInstrumentField field;
 		memset(&field,0,sizeof(CThostFtdcQryInstrumentField));
 		mUserApiPtr->ReqQryInstrument(&field,0);
-		Sleep(2000);
 	}
-	ostringstream os;
-	os<<__FUNCTION__<<"normally exits"<<endl;
-	Log::Instance()->Info(os.str());
+
 }
 

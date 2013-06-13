@@ -147,6 +147,6 @@ void MarketDataRecorder::WriteThread(void)
 		}
 	}
 	ostringstream os;
-	os<<"MarketDataRecorder::"<<__FUNCTION__<<" normally exits"<<endl;
+	os<<__FUNCTION__<<" normally exits"<<endl;
 	Log::Instance()->Info(os.str());
 }
