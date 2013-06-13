@@ -4,12 +4,16 @@
 #include <iostream>
 #include <sstream>
 #include <iomanip>
+#include <boost/thread/thread.hpp>
+#include <boost/thread/mutex.hpp>
+#include "TimeHelper.h"
 class Log
 {
 private:
 	std::ofstream mLogFile;	
 	static Log mLog;
 	bool mIsInitialized;
+	boost::mutex mLogMutex;
 private:
 	Log();
 	~Log();
@@ -25,13 +29,9 @@ public:
 		t=time(NULL); 
 		local=localtime(&t);
 		std::ostringstream os;
-		os<<std::setfill('0')<<std::setw(4)<<local->tm_year + 1900;
-		os<<std::setfill('0')<<std::setw(2)<<local->tm_mon + 1;
-		os<<std::setfill('0')<<std::setw(2)<<local->tm_mday<<":";
-		os<<std::setfill('0')<<std::setw(2)<<local->tm_hour<<":";
-		os<<std::setfill('0')<<std::setw(2)<<local->tm_min<<":";
-		os<<std::setfill('0')<<std::setw(2)<<local->tm_sec;
+		os<<TimeHelper::GetDate()<<":"<<TimeHelper::GetTime();
 		std::cerr<<"["<<os.str()<<"]"<<info<<std::endl;
+		boost::mutex::scoped_lock lock(mLogMutex);
 		mLogFile<<"["<<os.str()<<"]"<<info<<std::endl;
 	}	
 public:

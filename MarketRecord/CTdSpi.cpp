@@ -35,19 +35,20 @@ void CTdSpi::OnFrontConnected()
 
 void CTdSpi::ReqUserLogin()
 {
+	static int iRequestID = 0;
 	CThostFtdcReqUserLoginField req;
 	memset(&req, 0, sizeof(req));
 	strcpy(req.BrokerID, mConf->BROKER_ID);
 	strcpy(req.UserID, mConf->INVESTOR_ID);
 	strcpy(req.Password, mConf->PASSWORD);
-	int iResult = mUserApiPtr->ReqUserLogin(&req, ++(mConf->iRequestID));
+	int iResult = mUserApiPtr->ReqUserLogin(&req, ++iRequestID);
 	if(iResult == 0)
 	{
-		Log::Instance()->Info("--->>> 发送用户登录请求: 成功");
+		Log::Instance()->Info("--->>>CTdSpi 发送用户登录请求: 成功");
 	}
 	else
 	{
-		Log::Instance()->Info("--->>> 发送用户登录请求: 失败");
+		Log::Instance()->Info("--->>>CTdSpi 发送用户登录请求: 失败");
 		exit(0);
 	}
 }
@@ -67,8 +68,8 @@ void CTdSpi::OnRspUserLogin( CThostFtdcRspUserLoginField *pRspUserLogin, CThostF
 	if (bIsLast && !IsErrorRspInfo(pRspInfo))
 	{
 		///获取当前交易日
-		os << "--->>> 获取当前交易日 = " << mUserApiPtr->GetTradingDay() << endl;
-		os <<"--->>>TdSpi登录成功";
+		os << "--->>>CTdSpi 获取当前交易日 = " << mUserApiPtr->GetTradingDay() << endl;
+		os <<"--->>>CTdSpi登录成功";
 		Log::Instance()->Info(os.str());
 		// 请求订阅行情
 		if(mQueryInstrumentThread == NULL)
@@ -79,7 +80,7 @@ void CTdSpi::OnRspUserLogin( CThostFtdcRspUserLoginField *pRspUserLogin, CThostF
 	}
 	else
 	{
-		Log::Instance()->Info("--->>>TdSpi登录失败");
+		Log::Instance()->Info("--->>>CTdSpi登录失败");
 		exit(0);
 	}
 }
@@ -91,7 +92,7 @@ bool CTdSpi::IsErrorRspInfo(CThostFtdcRspInfoField *pRspInfo)
 	if (bResult)
 	{
 		ostringstream os;
-		os << "--->>> ErrorID=" << pRspInfo->ErrorID << ", ErrorMsg=" << pRspInfo->ErrorMsg << endl;
+		os << "--->>>CTdSpi ErrorID=" << pRspInfo->ErrorID << ", ErrorMsg=" << pRspInfo->ErrorMsg << endl;
 		Log::Instance()->Info(os.str());
 	}
 	return bResult;
@@ -129,5 +130,8 @@ void CTdSpi::QueryInstrumentThread( void )
 		mUserApiPtr->ReqQryInstrument(&field,0);
 		Sleep(2000);
 	}
+	ostringstream os;
+	os<<__FUNCTION__<<"normally exits"<<endl;
+	Log::Instance()->Info(os.str());
 }
 

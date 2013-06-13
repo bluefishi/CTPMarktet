@@ -36,7 +36,7 @@ void CMdSpi::OnRspError(CThostFtdcRspInfoField *pRspInfo,
 void CMdSpi::OnFrontDisconnected(int nReason)
 {
 	ostringstream os;
-	os<< "--->>> " << __FUNCTION__ << endl;
+	os<< "--->>> " <<__FUNCTION__ << endl;
 	os<< "--->>> Reason = " << nReason << endl;
 	Log::Instance()->Info(os.str());
 }
@@ -44,7 +44,7 @@ void CMdSpi::OnFrontDisconnected(int nReason)
 void CMdSpi::OnHeartBeatWarning(int nTimeLapse)
 {
 	ostringstream os;
-	os << "--->>> " << __FUNCTION__ << endl;
+	os << "--->>> " <<__FUNCTION__ << endl;
 	os << "--->>> nTimerLapse = " << nTimeLapse << endl;
 	Log::Instance()->Info(os.str());
 }
@@ -60,19 +60,20 @@ void CMdSpi::OnFrontConnected()
 
 void CMdSpi::ReqUserLogin()
 {
+	static int iRequestID = 0;
 	CThostFtdcReqUserLoginField req;
 	memset(&req, 0, sizeof(req));
 	strcpy(req.BrokerID, mConf->BROKER_ID);
 	strcpy(req.UserID, mConf->INVESTOR_ID);
 	strcpy(req.Password, mConf->PASSWORD);
-	int iResult = mUserApiPtr->ReqUserLogin(&req, ++(mConf->iRequestID));
+	int iResult = mUserApiPtr->ReqUserLogin(&req, ++iRequestID);
 	if(iResult == 0)
 	{
-		Log::Instance()->Info("--->>> 发送用户登录请求: 成功");
+		Log::Instance()->Info("--->>>CMdSpi 发送用户登录请求: 成功");
 	}
 	else
 	{
-		Log::Instance()->Info("--->>> 发送用户登录请求: 失败");
+		Log::Instance()->Info("--->>>CMdSpi 发送用户登录请求: 失败");
 		exit(0);
 	}
 }
@@ -81,12 +82,12 @@ void CMdSpi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin,
 		CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
 {
 	ostringstream os;
-	os << "--->>> " << __FUNCTION__ << endl;
+	os << "--->>> " <<__FUNCTION__ << endl;
 	if (bIsLast && !IsErrorRspInfo(pRspInfo))
 	{
 		///获取当前交易日
-		os << "--->>> 获取当前交易日 = " << mUserApiPtr->GetTradingDay() << endl;
-		os <<"--->>>MdSpi登录成功"<<endl;
+		os << "--->>>CMdSpi 获取当前交易日 = " << mUserApiPtr->GetTradingDay() << endl;
+		os <<"--->>>CMdSpi登录成功"<<endl;
 		Log::Instance()->Info(os.str());
 		// 请求订阅行情
 		//SubscribeMarketData();	
@@ -108,7 +109,7 @@ void CMdSpi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin,
 	}
 	else
 	{
-		Log::Instance()->Info("--->>>MdSpi登录失败");
+		Log::Instance()->Info("--->>>CMdSpi登录失败");
 		exit(0);
 	}
 }
@@ -138,7 +139,7 @@ bool CMdSpi::IsErrorRspInfo(CThostFtdcRspInfoField *pRspInfo)
 	bool bResult = ((pRspInfo) && (pRspInfo->ErrorID != 0));
 	if (bResult)
 	{
-		os << "--->>> ErrorID=" << pRspInfo->ErrorID << ", ErrorMsg=" << pRspInfo->ErrorMsg << endl;
+		os << "--->>>CMdSpi:: ErrorID=" << pRspInfo->ErrorID << ", ErrorMsg=" << pRspInfo->ErrorMsg << endl;
 		Log::Instance()->Info(os.str());
 	}
 	return bResult;
@@ -187,6 +188,7 @@ void CMdSpi::SuscribeInstrumentThread( void )
 			if(iResult != 0)
 			{
 				Log::Instance()->Info(string("--->>>订阅行情 ") + " 失败");
+				boost::mutex::scoped_lock lock(this->mQueueMutex);
 				for(int i = 0; i < index; ++i)
 				{
 					mSubscribedInstrumentSet.erase(ppInstrumentID[i]);

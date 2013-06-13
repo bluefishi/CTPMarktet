@@ -83,7 +83,9 @@ void main(int argc, char** argv)
 		currentTime = TimeHelper::GetTime();
 		if(currentTime > CTPConfiguration::Instance()->MainThreadExitTime)
 		{
+			pMdUserApi->RegisterSpi(NULL);
 			pMdUserApi->Release();
+			pTdUserApi->RegisterSpi(NULL);
 			pTdUserApi->Release();
 			Log::Instance()->Info("main thread normally exits");
 			return;

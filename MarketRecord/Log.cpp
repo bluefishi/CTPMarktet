@@ -1,8 +1,4 @@
 #include "Log.h"
-#include <iostream>
-#include <ctime>
-#include <sstream>
-#include <iomanip>
 using namespace std;
 
 Log Log::mLog;
