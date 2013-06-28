@@ -14,7 +14,7 @@ def isExist(pn):
             if fields[0] == pn:
                 return True
     return False
-            
+
 def strTime():
     return time.strftime('%H:%M:%S',time.localtime(time.time()))
 
