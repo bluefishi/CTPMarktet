@@ -14,8 +14,8 @@ CTPConfiguration::CTPConfiguration()
 	iRequestID = 0;
 	iInstrumentID = 0;
 	StorageRootDir = "D:\\Workspaces\\ctp\\data";
-	WorkThreadExitTime = "16:00:00";
-	MainThreadExitTime = "16:10:00";
+	WorkThreadExitTime = "15:16:00";
+	MainThreadExitTime = "15:17:00";
 }
 
 CTPConfiguration::~CTPConfiguration()

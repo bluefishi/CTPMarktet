@@ -23,10 +23,10 @@ if __name__=='__main__':
         curTime = strTime()
         day = datetime.datetime.now().weekday() + 1;
         if day >= 1 and day <= 5:
-            if curTime>"08:30:00" and curTime<"16:00:00":
+            if curTime>"08:50:00" and curTime<"15:16:00":
                 if not isExist(processName):
                     os.system("start " + processName+" "+storageDir)
-            elif curTime>"16:30:00":
+            elif curTime>"15:18:00":
                 if isExist(processName):
                     os.system("taskkill /f /im "+processName)
         else:
